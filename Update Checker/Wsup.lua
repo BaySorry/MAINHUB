@@ -74,7 +74,7 @@ local Database = {
     ["70845479499574"] = {
         Name = "Bite By Night",
         ScriptUrl = "https://raw.githubusercontent.com/BaySorry/MAINHUB/refs/heads/main/BiteByNight/BiteByNight.lua",
-        NeedsUpdate = true
+        NeedsUpdate = false
     },
 }
 
