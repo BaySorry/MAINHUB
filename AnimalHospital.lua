@@ -1225,12 +1225,4 @@ CollectionService:GetInstanceRemovedSignal("NPC"):Connect(function(npc) if espOb
 RunService.RenderStepped:Connect(function() scanNPCs(); updateESP(); cleanupESP(); statLbl.Text = "Anomalies: " .. anomalyCount .. " | Normals: " .. normalCount end)
 
 task.wait(1); scanNPCs(); startTranslationListener()
-task.spawn(function()
-    task.wait(1.5)
-    applyTurkish()
-    player.CharacterAdded:Connect(function()
-        task.wait(2)
-        applyTurkish()
-    end)
-end)
-return "Loaded - Auto Turkish"
+return "Loaded"
