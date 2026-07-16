@@ -7,7 +7,6 @@ local RunService = game:GetService("RunService")
 local CollectionService = game:GetService("CollectionService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
-local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
@@ -32,232 +31,6 @@ local categoryFilters = {
     TallMonster = true, Skinwalker = true, Shadow = true,
     Normal = true, ESP_MASTER = true
 }
-
--- ==========================================
--- TRANSLATION
--- ==========================================
-local langData = {}
-local isTurkish = false
-
-local TR = {
-    Objective = "Görev", ["Stamp the form"] = "Formu damgala", ["Stamp Forms"] = "Formları Damgala",
-    SANITY = "AKIL", sanity = "akıl", Intern = "Stajyer",
-    ["SHIFT FINISHED"] = "VARDİYA BİTTİ", ["Shift Finished"] = "Vardiya Bitti",
-    ["Your bag is full!"] = "Çantan doldu!",
-    ["NO SIGNAL"] = "SİNYAL YOK", ["NO SIGNAL - REQUIRES FIX"] = "SİNYAL YOK - TAMİR GEREK",
-    CAM = "KAM", EXIT = "ÇIKIŞ", exit = "çıkış", Inventory = "Envanter",
-    Shift = "Vardiya", ["Shift 2"] = "Vardiya 2", ["Excellent"] = "Mükemmel",
-    ["SHIFT REPORT"] = "VARDİYA RAPORU", ["Hospital Performance:"] = "Hastane Performansı:",
-    ["Patients Treated:"] = "Tedavi Edilen:", ["Anomalies Prevented"] = "Engellenen Anomaliler",
-    ["Visitors Admitted:"] = "Kabul Edilen Ziyaretçiler:", ["Animal Deaths:"] = "Hayvan Ölümleri:",
-    ["Bonus!"] = "Bonus!", BEST = "EN İYİ", ["Hospital Deaths"] = "Hastane Ölümleri",
-    ["Don't look up"] = "Yukarı bakma", ["Patient being eaten in room"] = "Hasta yeniyor oda",
-    EMERGENCIES = "ACİL DURUMLAR", ["Run!"] = "Kaç!", ["!"] = "!",
-    ["YOU DIED"] = "ÖLDÜN", ["Your sanity got depleted and went mad"] = "Aklın tükendi ve çıldırdın",
-    ["Returning in"] = "Dönüş:", ["Lives"] = "Can", ["Lives 3/3"] = "Can 3/3",
-    ["Revive Everyone"] = "Herkesi Dirilt", ["Play Again (0/1)"] = "Tekrar Oyna (0/1)",
-    ["Self Revive"] = "Kendini Dirilt", ["Revive"] = "Dirilt",
-    ["fainted"] = "bayıldı", ["Fainted"] = "Bayıldı",
-    ["(tap on one option)"] = "(bir seçeneğe dokun)", Done = "Tamam",
-    ["Goodbye!"] = "Hoşçakal!", ["Accept"] = "Kabul Et", ["Decline"] = "Reddet",
-    ["OK"] = "Tamam", ["Ask to Leave"] = "Ayrılmayı İste",
-    ["you make yourself a coffee"] = "kendine kahve yapıyorsun",
-    ["The doctor is arriving"] = "Doktor geliyor", ["the doctor is arriving"] = "doktor geliyor",
-    ["Some advice:"] = "Tavsiye:", ["doctor"] = "doktor",
-    s = "", ["46s"] = "46sn", ["47s"] = "47sn", ["99s"] = "99sn", ["120s"] = "120sn",
-    ["Boost:"] = "Güçlendirme:", ["Boost: 120s"] = "Güçlendirme: 120sn", ["+5 Coffee"] = "+5 Kahve",
-    ["Remove From Hotbar"] = "Hızlı çubuktan kaldır", ["Select/Swap"] = "Seç/Değiştir",
-    ["Close Backpack"] = "Çantayı kapat",
-    ["Check In"] = "Giriş Yap", Heal = "İyileştir", Examine = "İncele", Inspect = "İncele",
-    ["Pick Up"] = "Al", Open = "Aç", Close = "Kapat", Use = "Kullan", Drop = "Bırak",
-    Store = "Sakla", Buy = "Satın Al", ["Buy Gun"] = "Tabanca Satın Al", Sell = "Sat",
-    Interact = "Etkileşim", Talk = "Konuş", Pat = "Sev", Feed = "Besle",
-    ["Take Photo"] = "Fotoğraf Çek", Take = "Al", Register = "Kayıt Oluştur",
-    ["Print Badge"] = "Kart Bastır", ["Take DNA Sample"] = "DNA Örneği Al",
-    ["Apply Treatment"] = "Tedavi Uygula", ["Analyze Sample"] = "Örneği Analiz Et",
-    ["Process Results"] = "Sonuçları İşle", ["Begin X-Ray"] = "Röntgen Çek",
-    Begin = "Başlat", Collect = "Topla", ["Turn On"] = "Aç", ["Set Up"] = "Hazırla",
-    ["Prepare Patient"] = "Hastayı Hazırla", ["Trash Item"] = "Çöpe At",
-    Coffee = "Kahve", ["Chocolate (60% Sanity)"] = "Çikolata (%60 Akıl)",
-    ["Security Cams"] = "Güvenlik Kameraları", ["Return Taser"] = "Taser'ı Geri Ver",
-    ["Return Fire Ext."] = "Yangın Söndürücüyü Geri Ver", ["Break Poster"] = "Posteri Kır",
-    Locked = "Kilitli", ["Scan Identity"] = "Kimlik Tara",
-    ["Un-jam button."] = "Butonu aç.", ["Broken Baby Doll"] = "Kırık Bebek",
-    Door = "Kapı", ["Jumpscare All"] = "Herkese Korkutma",
-    ["Medicine"] = "İlaç", ["Bandages"] = "Sargı Bezi", ["Bandage"] = "Sargı Bezi",
-    ["Ointment"] = "Merhem", ["Thermo"] = "Termometre", ["Medkit"] = "Medikit",
-    ["Cough Syrup"] = "Öksürük Şurubu", ["Maple Syrup"] = "Akçaağaç Şurubu",
-    ["Eye Drops"] = "Göz Damlası", ["Herbs"] = "Bitkiler", ["IV Drops"] = "IV Damla",
-    ["Antibiotics"] = "Antibiyotik", ["Transplant"] = "Nakil", ["Organ"] = "Organ",
-    ["Scissors"] = "Makas", ["Scalpel"] = "Neşter", ["RunCola"] = "KoşKol",
-    ["Treatment"] = "Tedavi", ["treatment"] = "tedavi",
-    ["Dehydration"] = "Dehidrasyon", ["Stomach Ache"] = "Karın Ağrısı", ["Head Ache"] = "Baş Ağrısı",
-    ["Bleeding"] = "Kanama", ["Fever"] = "Ateş", ["Low Sugar"] = "Düşük Şeker",
-    ["Canadian"] = "Kanada", ["Flu"] = "Grip", ["Rash"] = "Döküntü",
-    ["Dried Eyes"] = "Kuru Gözler", ["Bruises"] = "Morluklar",
-    ["Visitor"] = "Ziyaretçi", ["visitor"] = "ziyaretçi", ["Patient"] = "Hasta", ["patient"] = "hasta",
-    ["Hello, my name is "] = "Merhaba, benim adım ", ["I'm "] = "Ben ",
-    ["Sup, I'm "] = "Selam, ben ", ["Hey..."] = "Hey...",
-    ["Hello"] = "Merhaba", ["Hi"] = "Merhaba", ["Goodbye"] = "Hoşçakal",
-    ["Please"] = "Lütfen", ["Thank you"] = "Teşekkürler", ["Thanks"] = "Teşekkürler",
-    ["Come with me"] = "Benimle gel", ["Follow me"] = "Beni takip et",
-    ["This way"] = "Bu taraftan", ["Wait here"] = "Burada bekle", ["Wait"] = "Bekle",
-    ["I'll be right back"] = "Hemen döneceğim", ["Let me examine you"] = "Seni muayene edeyim",
-    ["Everything looks good"] = "Her şey iyi görünüyor", ["You're healed"] = "İyileştin",
-    ["All done"] = "Tamamlandı", ["You can go now"] = "Şimdi gidebilirsin",
-    ["What's wrong?"] = "Sorun nedir?", ["Where does it hurt?"] = "Neren ağrıyor?",
-    ["Does this hurt?"] = "Burası ağrıyor mu?", ["I need help"] = "Yardıma ihtiyacım var",
-    ["Help me"] = "Bana yardım et", ["Over here"] = "Burada",
-    ["I'm scared"] = "Korkuyorum", ["Don't worry"] = "Endişelenme",
-    ["It's okay"] = "Sorun yok", ["Stay calm"] = "Sakin ol", ["Breathe"] = "Nefes al",
-    ["Almost done"] = "Neredeyse bitti", ["Just a moment"] = "Bir dakika",
-    ["I found something"] = "Bir şey buldum", ["Look at this"] = "Şuna bak",
-    ["What is that?"] = "O nedir?", ["Something is wrong"] = "Bir şeyler yanlış",
-    ["I don't feel good"] = "İyi hissetmiyorum", ["Are you okay?"] = "İyi misin?",
-    ["I'm fine"] = "İyiyim", ["Stay here"] = "Burada kal", ["Don't move"] = "Kıpırdama",
-    ["I'll get help"] = "Yardım getireceğim", ["Wait for me"] = "Beni bekle",
-    ["Let's go"] = "Gidelim", ["Hurry"] = "Acele et", ["Quick"] = "Çabuk",
-    ["This is an emergency"] = "Bu bir acil durum", ["Code blue"] = "Kod mavi",
-    ["Everything is fine"] = "Her şey yolunda", ["False alarm"] = "Yanlış alarm",
-    ["Just a check-up"] = "Sadece bir kontrol", ["Routine examination"] = "Rutin muayene",
-    ["Your results are ready"] = "Sonuçların hazır",
-    ["The doctor will see you now"] = "Doktor şimdi seni görecek",
-    ["Please have a seat"] = "Lütfen otur", ["Make yourself comfortable"] = "Rahatına bak",
-    -- Dialogues
-    ["I'm here for my appointment..."] = "Randevum için buradayım...",
-    ["I have an appointment..."] = "Randevum var...",
-    ["AAAAH!! I'M ON FIRE!!"] = "AAAAH!! YANIYORUM!!",
-    ["I NEED HELP!!!"] = "YARDIM LAZIM!!!",
-    ["You must be the new hire, I'm Dr Harlow."] = "Yeni çalışan sen olmalısın, ben Dr Harlow.",
-    ["Some advice: If things get strange, just keep working."] = "Tavsiye: İşler garipleşirse, çalışmaya devam et.",
-    ["I will fix up the shutters and security cameras for you."] = "Panjurları ve kameraları tamir edeceğim.",
-    ["shutters"] = "panjurlar", ["security cameras"] = "güvenlik kameraları",
-    ["I'm opening new facilities for you."] = "Yeni birimler açıyorum.",
-    ["supplies shop"] = "malzeme dükkanı", ["limited time"] = "sınırlı süre",
-    ["The supplies shop will be open for a limited time each shift."] = "Malzeme dükkanı her vardiyada sınırlı süre açık.",
-    ["the shop is open!"] = "dükkan açık!", ["shift"] = "vardiya",
-    ["Some patients may seem... unstable..."] = "Bazı hastalar... dengesiz görünebilir...",
-    ["unstable"] = "dengesiz",
-    ["Make sure to use the photo and cameras. Stay alert."] = "Fotoğraf ve kameraları kullan. Tetikte ol.",
-    ["I will unlock the taser. Use it wisely."] = "Taser'ın kilidini açacağım. Akıllıca kullan.",
-    ["Your sanity is important. Don't DIE on me."] = "Aklın önemli. SAKIN ÖLME.",
-    ["DIE"] = "ÖLME",
-    ["And take good care of the patients."] = "Ve hastalara iyi bak.",
-    ["If the hospital records 3 DEATHS it's over."] = "Hastane 3 ÖLÜM kaydederse iş biter.",
-    ["DEATHS"] = "ÖLÜM",
-    ["There's been a huge anomaly attack!"] = "Büyük bir anomali saldırısı oldu!",
-    ["anomaly attack"] = "anomali saldırısı",
-    ["6 people died and many more were hurt."] = "6 kişi öldü, daha fazlası yaralandı.",
-    ["Be prepared, the ambulance is coming..."] = "Hazır ol, ambulans geliyor...",
-    ["ambulance"] = "ambulans",
-    ["Good job, the emergency is over for now."] = "İyi iş, acil durum bitti.",
-    ["More ambulances will come, be prepared."] = "Daha fazla ambulans gelecek, hazırlıklı ol.",
-    ["Here is a bonus for your work."] = "Çalışman için bonus.",
-    ["bonus"] = "bonus",
-    ["Being small has its advantages..."] = "Küçük olmanın avantajları var...",
-    ["I hear things... I see things..."] = "Şeyler duyuyorum... Şeyler görüyorum...",
-    ["It's a dangerous job..."] = "Tehlikeli bir iş...",
-    ["My advice... Don't trust anyone here..."] = "Tavsiyem... Kimseye güvenme...",
-    ["Something evil is going on here."] = "Burada kötü bir şeyler dönüyor.",
-    ["Stay alert..."] = "Tetikte ol...",
-    ["I may need to disappear for a while..."] = "Kaybolmam gerekebilir...",
-    ["The Animal Corporation is after me..."] = "Hayvan Şirketi peşimde...",
-    ["Name's Ron... from accounting."] = "Adım Ron... muhasebeden.",
-    ["You ever wonder why they keep hiring new people?"] = "Neden sürekli yeni insan alıyorlar?",
-    ["...Never mind."] = "...Boşver.",
-    ["The last guy got eaten by the bed monster."] = "Son adam yatak canavarına yem oldu.",
-    ["You want to know a secret?"] = "Bir sır öğrenmek ister misin?",
-    ["They're testing something here."] = "Burada bir şey test ediyorlar.",
-    ["testing"] = "test",
-    ["The patients... they're not sick. They're infected."] = "Hastalar... hasta değil. Enfekte olmuşlar.",
-    ["infected"] = "enfekte",
-    ["Pretty sketchy..."] = "Oldukça şüpheli...",
-    ["coffee"] = "kahve", ["camera"] = "kamera",
-    ["suitcase"] = "valiz", ["serial killer"] = "seri katil",
-    ["SERIAL KILLER"] = "SERİ KATİL",
-    ["anomalies"] = "anomaliler",
-    ["transforming"] = "dönüşüyor",
-    ["camera"] = "kamera",
-    ["Are you serious"] = "Ciddi misin",
-    ["youre turning me away"] = "beni geri çeviriyorsun",
-    ["you're turning me away"] = "beni geri çeviriyorsun",
-    ["I want to check in as a patient..."] = "Hasta olarak giriş yapmak istiyorum...",
-    ["I need to see a doctor"] = "Doktora görünmem gerek",
-    ["I am sick"] = "Hastayım",
-    ["I feel terrible"] = "Berbat hissediyorum",
-    -- Common phrases
-    ["Are you sure?"] = "Emin misin?", ["Yes"] = "Evet", ["No"] = "Hayır",
-    ["Maybe"] = "Belki", ["Never"] = "Asla", ["Always"] = "Her zaman",
-    ["Sometimes"] = "Bazen", ["Often"] = "Sık sık", ["Rarely"] = "Nadiren",
-    ["Today"] = "Bugün", ["Tomorrow"] = "Yarın", ["Yesterday"] = "Dün",
-    ["Now"] = "Şimdi", ["Later"] = "Sonra", ["Soon"] = "Yakında",
-    ["Here"] = "Burada", ["There"] = "Orada", ["Everywhere"] = "Her yerde",
-    -- Upgrades
-    ["Animal Coins"] = "Hayvan Paraları", ["Second Check-in"] = "İkinci Giriş",
-    ["Extra check in window"] = "Ek giriş penceresi",
-    ["Faster Check-Ins"] = "Hızlı Girişler",
-    ["Faster check in"] = "Daha hızlı giriş",
-    ["Adv. DNA Synth"] = "Gelişmiş DNA Sentezi",
-    ["50% Faster DNA analysis"] = "%50 Hızlı DNA analizi",
-    ["Medicine Pockets"] = "İlaç Cepleri",
-    ["+1 Carry Capacity"] = "+1 Taşıma",
-    ["Running Shoes"] = "Koşu Ayakkabısı",
-    ["Coffee Thermometer"] = "Kahve Termometresi",
-    ["Compact Storage"] = "Kompakt Depolama",
-    ["+1 inventory capacity"] = "+1 envanter",
-    ["Bed Anchor"] = "Yatak Çapası",
-    ["Patients wont flee"] = "Hastalar kaçmaz",
-    ["Emergency Access"] = "Acil Erişim",
-    ["good"] = "iyi", ["bad"] = "kötü", ["great"] = "harika",
-    ["perfect"] = "mükemmel", ["awesome"] = "harika", ["terrible"] = "korkunç",
-    ["sorry"] = "üzgünüm", ["welcome"] = "hoş geldin",
-    ["computer"] = "bilgisayar", ["screen"] = "ekran",
-    ["results"] = "sonuçlar", ["printer"] = "yazıcı",
-    ["form"] = "form", ["badge"] = "kart",
-    ["window"] = "pencere", ["desk"] = "masa",
-    ["key"] = "anahtar", ["sample"] = "örnek",
-    ["photo"] = "fotoğraf", ["picture"] = "resim",
-    ["Stop"] = "Dur", ["Help"] = "Yardım",
-    ["Cancel"] = "İptal", ["Confirm"] = "Onayla",
-    ["Loading"] = "Yükleniyor", ["Saving"] = "Kaydediliyor",
-    ["Error"] = "Hata", ["Success"] = "Başarılı",
-}
-
-local function stripTags(s)
-    return s:gsub("<[^>]+>", "")
-end
-
-    end
-    if clean ~= t then return clean end
-    return t
-end
-
-    langData = {}; isTurkish = false
-end
-
-    end
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("ProximityPrompt") then
-            if v.ActionText and #v.ActionText > 0 then
-                local tr = TR[v.ActionText] or translateText(v.ActionText)
-                if tr ~= v.ActionText then
-                    if not langData[v] then langData[v] = {} end
-                    langData[v].ActionText = v.ActionText; v.ActionText = tr
-                end
-            end
-            if v.ObjectText and #v.ObjectText > 0 then
-                local tr = TR[v.ObjectText]
-                if tr and tr ~= v.ObjectText then
-                    if not langData[v] then langData[v] = {} end
-                    langData[v].ObjectText = v.ObjectText; v.ObjectText = tr
-                end
-            end
-        end
-    end
-    isTurkish = true
-end
-
-
 
 -- ==========================================
 -- ANOMALY DETECTION
@@ -339,12 +112,10 @@ local function createESP(npc, npcType, isAnom)
     hf.BorderSizePixel = 0; hf.Parent = hb
     local hfc = Instance.new("UICorner"); hfc.CornerRadius = UDim.new(0, 2); hfc.Parent = hf
     bb.Parent = CoreGui
-
     local hl = Instance.new("Highlight")
     hl.Name = "AnomalyHighlight_" .. npc.Name; hl.Adornee = npc; hl.FillColor = color
     hl.FillTransparency = 0.65; hl.OutlineColor = color; hl.OutlineTransparency = 0.3
     hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop; hl.Parent = CoreGui
-
     espObjects[npc] = { billboard = bb, highlight = hl, hpFill = hf, statusLabel = sl, isAnom = isAnom, npcType = npcType, root = root }
 end
 
@@ -418,20 +189,19 @@ local function cleanupESP()
 end
 
 -- ==========================================
--- ICON BUTTON + MENU (New GUI)
+-- ICON + MENU
 -- ==========================================
 local mainGui = Instance.new("ScreenGui")
 mainGui.Name = "AnomalyHub"; mainGui.ResetOnSpawn = false; mainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 mainGui.Parent = CoreGui
 
--- === MAIN MENU (Hidden by default) ===
+-- === MAIN MENU ===
 local menuFrame = Instance.new("Frame")
 menuFrame.Size = UDim2.new(0, 520, 0, 460); menuFrame.Position = UDim2.new(0.12, 0, 0.12, 0)
 menuFrame.BackgroundColor3 = Color3.fromRGB(32, 31, 31); menuFrame.BorderSizePixel = 0; menuFrame.Visible = false
 menuFrame.Parent = mainGui; menuFrame.Active = true; menuFrame.Draggable = true
 local menuCorner = Instance.new("UICorner"); menuCorner.CornerRadius = UDim.new(0, 10); menuCorner.Parent = menuFrame
 
--- Header
 local header = Instance.new("TextLabel")
 header.Size = UDim2.new(1, 0, 0, 50); header.BackgroundColor3 = Color3.fromRGB(34, 34, 34)
 header.BorderSizePixel = 0; header.Parent = menuFrame
@@ -440,14 +210,12 @@ header.Text = "MAIN HUB"; header.Font = Enum.Font.SourceSans; header.TextSize = 
 header.TextColor3 = Color3.fromRGB(255, 255, 255); header.TextStrokeColor3 = Color3.fromRGB(255, 204, 0)
 header.TextStrokeTransparency = 0.58
 
--- Close button (X) on header
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 32, 0, 32); closeBtn.Position = UDim2.new(1, -40, 0, 9)
 closeBtn.BackgroundColor3 = Color3.fromRGB(60, 50, 50); closeBtn.Text = "X"; closeBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 closeBtn.TextScaled = true; closeBtn.Font = Enum.Font.GothamBold; closeBtn.Parent = header
 local closeCorner = Instance.new("UICorner"); closeCorner.CornerRadius = UDim.new(0, 6); closeCorner.Parent = closeBtn
 
--- Content (ScrollingFrame)
 local sf = Instance.new("ScrollingFrame")
 sf.Size = UDim2.new(1, -12, 1, -60); sf.Position = UDim2.new(0, 6, 0, 56)
 sf.BackgroundTransparency = 1; sf.BorderSizePixel = 0; sf.ScrollBarThickness = 5
@@ -456,7 +224,6 @@ sf.Parent = menuFrame
 local pad = Instance.new("UIPadding"); pad.PaddingLeft = UDim.new(0, 10); pad.PaddingRight = UDim.new(0, 10); pad.PaddingTop = UDim.new(0, 6); pad.Parent = sf
 local lay = Instance.new("UIListLayout"); lay.SortOrder = Enum.SortOrder.LayoutOrder; lay.Padding = UDim.new(0, 4); lay.Parent = sf
 
--- Helper functions
 local function hdr(t)
     local h = Instance.new("TextLabel"); h.Size = UDim2.new(1, 0, 0, 22); h.BackgroundTransparency = 1
     h.Text = t; h.TextColor3 = Color3.fromRGB(220, 200, 120); h.TextScaled = true
@@ -489,8 +256,7 @@ local function bigBtn(name, color, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- ====== MENU CONTENT ======
--- Stats
+-- Menu content
 local statLbl = Instance.new("TextLabel")
 statLbl.Size = UDim2.new(1, 0, 0, 20); statLbl.BackgroundTransparency = 1
 statLbl.Text = "Anomalies: 0 | Normals: 0"; statLbl.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -509,10 +275,6 @@ tgl("Shadow", "Shadow", true, Color3.fromRGB(100, 100, 255))
 tgl("Normal", "Normal", true, Color3.fromRGB(0, 255, 0))
 
 local sep2 = Instance.new("Frame"); sep2.Size = UDim2.new(1, 0, 0, 1); sep2.BackgroundColor3 = Color3.fromRGB(60, 60, 70); sep2.BorderSizePixel = 0; sep2.Parent = sf
-
-
-    applyTurkish()
-end
 bigBtn("REFRESH NPC", Color3.fromRGB(50, 50, 60), function() scanNPCs() end)
 
 local sep3 = Instance.new("Frame"); sep3.Size = UDim2.new(1, 0, 0, 1); sep3.BackgroundColor3 = Color3.fromRGB(60, 60, 70); sep3.BorderSizePixel = 0; sep3.Parent = sf
@@ -539,13 +301,10 @@ closeBtn.MouseButton1Click:Connect(function()
     menuOpen = false; menuFrame.Visible = false
 end)
 
--- RightShift toggle
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
     if input.KeyCode == Enum.KeyCode.RightShift then espEnabled = not espEnabled end
 end)
-
--- Events
 
 -- === FLOATING ICON ===
 local iconBtn = Instance.new("ImageButton")
@@ -555,7 +314,6 @@ iconBtn.BorderSizePixel = 0; iconBtn.Image = "rbxassetid://74010930701899"
 iconBtn.Parent = mainGui
 local iconCorner = Instance.new("UICorner"); iconCorner.CornerRadius = UDim.new(0, 12); iconCorner.Parent = iconBtn
 
--- Icon controls
 local isDragging = false; local isPressed = false
 local pressStartTime = 0; local mouseDownPos = nil; local iconStartPos = nil
 local menuOpen = false
@@ -566,7 +324,6 @@ iconBtn.MouseButton1Down:Connect(function()
     mouseDownPos = UserInputService:GetMouseLocation()
     iconStartPos = iconBtn.Position
 end)
-
 iconBtn.MouseButton1Up:Connect(function()
     isPressed = false
     if not isDragging and (tick() - pressStartTime) < 0.3 then
@@ -574,7 +331,6 @@ iconBtn.MouseButton1Up:Connect(function()
     end
     isDragging = false
 end)
-
 UserInputService.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement and isPressed then
         local delta = UserInputService:GetMouseLocation() - mouseDownPos
@@ -591,12 +347,32 @@ CollectionService:GetInstanceRemovedSignal("NPC"):Connect(function(npc)
     if espObjects[npc] then local d = espObjects[npc]; if d.billboard then pcall(d.billboard.Destroy, d.billboard) end; if d.highlight then pcall(d.highlight.Destroy, d.highlight) end; espObjects[npc] = nil end
 end)
 
--- Main loop
 RunService.RenderStepped:Connect(function()
     scanNPCs(); updateESP(); cleanupESP()
     statLbl.Text = "Anomalies: " .. anomalyCount .. " | Normals: " .. normalCount
 end)
 
 -- Init
--- task.wait(1); scanNPCs(); startTranslationListener()
+task.wait(1); scanNPCs()
+
+-- Abunol part 1
+local abunol = Instance.new("Part")
+abunol.Name = "Abunol"; abunol.Transparency = 1
+abunol.Size = Vector3.new(4.5, 5.1, 0.001)
+abunol.Position = Vector3.new(-186.05, 12.15, -5.1)
+abunol.Anchored = true; abunol.Orientation = Vector3.new(0, -90, 0); abunol.Parent = workspace
+local decal = Instance.new("Decal")
+decal.Face = Enum.NormalId.Front; decal.Texture = "rbxassetid://71664025078228"
+decal.Parent = abunol
+
+-- Abunol part 2
+local abunol2 = Instance.new("Part")
+abunol2.Name = "Abunol"; abunol2.Transparency = 1
+abunol2.Size = Vector3.new(4.5, 5.1, 0.001)
+abunol2.Position = Vector3.new(-122.55, 6.95, 21.4)
+abunol2.Anchored = true; abunol2.Orientation = Vector3.new(0, 0, 0); abunol2.Parent = workspace
+local decal2 = Instance.new("Decal")
+decal2.Face = Enum.NormalId.Front; decal2.Texture = "rbxassetid://71664025078228"
+decal2.Parent = abunol2
+
 return "ESP v6 loaded"
