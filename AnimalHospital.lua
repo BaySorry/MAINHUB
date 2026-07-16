@@ -227,71 +227,14 @@ local function stripTags(s)
     return s:gsub("<[^>]+>", "")
 end
 
-local function translateText(t)
-    local clean = stripTags(t)
-    if TR[clean] then return TR[clean] end
-    if TR[t] then return TR[t] end
-    local patterns = {
-        { "Take sample from patient in Room (%d+)", function(n) return "Oda " .. n .. "'deki hastadan örnek al" end },
-        { "Heal patient in Room (%d+)", function(n) return "Oda " .. n .. "'deki hastayı iyileştir" end },
-        { "Check in patient in Room (%d+)", function(n) return "Oda " .. n .. "'deki hastayı kaydet" end },
-        { "Treat the patient in Room (%d+)", function(n) return "Oda " .. n .. "'deki hastayı tedavi et" end },
-        { "Thanks, I will be in room (%d+)", function(n) return "Teşekkürler, " .. n .. ". odada olacağım" end },
-        { "Thanks, I will be in (%d+)", function(n) return "Teşekkürler, " .. n .. ". odada" end },
-        { "I will be in room (%d+)", function(n) return n .. ". odada olacağım" end },
-        { "I got room (%d+)", function(n) return "Oda " .. n .. "'yı aldım" end },
-        { "Death ritual in room (%d+)", function(n) return "Oda " .. n .. "'de ölüm ritüeli" end },
-        { "Room (%d+)", function(n) return "Oda " .. n end },
-        { "Go to Room (%d+)", function(n) return "Oda " .. n .. "'ye git" end },
-        { "Check in patients", function() return "Hastaları kaydet" end },
-        { "ROOM (%d+)! OK!! AHH!!", function(n) return "ODA " .. n .. "! TAMAM!! AHH!!" end },
-    }
-    for _, p in ipairs(patterns) do
-        local matches = { clean:match(p[1]) }
-        if #matches > 0 and matches[1] ~= nil then
-            return p[2](unpack(matches))
-        end
-    end
-    for eng, tr in pairs(TR) do
-        if #eng >= 3 and clean:find(eng, 1, true) then
-            return clean:gsub(eng, tr)
-        end
     end
     if clean ~= t then return clean end
     return t
 end
 
-local function restoreEnglish()
-    for v, orig in pairs(langData) do
-        if v and v.Parent then
-            if type(orig) == "table" then
-                if orig.ActionText then v.ActionText = orig.ActionText end
-                if orig.ObjectText then v.ObjectText = orig.ObjectText end
-            else
-                v.Text = orig
-            end
-        end
-    end
     langData = {}; isTurkish = false
 end
 
-local function applyTurkish()
-    local pg = player:FindFirstChild("PlayerGui")
-    if not pg then return end
-    if isTurkish then restoreEnglish() end
-    langData = {}
-    for _, v in pairs(pg:GetDescendants()) do
-        if (v:IsA("TextLabel") or v:IsA("TextButton")) and v.Text and #v.Text > 0 and v.Text ~= " " then
-            local clean = stripTags(v.Text)
-            local tr = translateText(clean)
-            if tr and tr ~= clean then langData[v] = v.Text; v.Text = tr end
-        end
-    end
-    for _, v in pairs(CoreGui:GetDescendants()) do
-        if (v:IsA("TextLabel") or v:IsA("TextButton")) and v.Text and #v.Text > 0 then
-            local tr = TR[v.Text]
-            if tr and tr ~= v.Text then langData[v] = v.Text; v.Text = tr end
-        end
     end
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("ProximityPrompt") then
@@ -314,37 +257,7 @@ local function applyTurkish()
     isTurkish = true
 end
 
-local function watchTextElement(v)
-    if not v or not v:IsA("TextLabel") and not v:IsA("TextButton") then return end
-    local t = v.Text
-    if t and #t > 0 then
-        pcall(function() if not langData[v] then langData[v] = v.Text end end)
-        local tr = translateText(t)
-        if tr and tr ~= t then pcall(function() v.Text = tr end) end
-    end
-    v:GetPropertyChangedSignal("Text"):Connect(function()
-        if not isTurkish then return end
-        task.wait(0.05)
-        local success, nt = pcall(function() return v.Text end)
-        if not success or not nt or #nt == 0 then return end
-        pcall(function() if not langData[v] then langData[v] = nt end end)
-        local tr = translateText(nt)
-        if tr and tr ~= nt then pcall(function() v.Text = tr end) end
-    end)
-end
 
-local function startTranslationListener()
-    local pg = player:FindFirstChild("PlayerGui")
-    if not pg then return end
-    for _, v in pairs(pg:GetDescendants()) do
-        if v:IsA("TextLabel") or v:IsA("TextButton") then watchTextElement(v) end
-    end
-    pg.DescendantAdded:Connect(function(v)
-        task.wait(0.15)
-        if not isTurkish then return end
-        if v:IsA("TextLabel") or v:IsA("TextButton") then watchTextElement(v) end
-    end)
-end
 
 -- ==========================================
 -- ANOMALY DETECTION
@@ -597,13 +510,9 @@ tgl("Normal", "Normal", true, Color3.fromRGB(0, 255, 0))
 
 local sep2 = Instance.new("Frame"); sep2.Size = UDim2.new(1, 0, 0, 1); sep2.BackgroundColor3 = Color3.fromRGB(60, 60, 70); sep2.BorderSizePixel = 0; sep2.Parent = sf
 
-hdr("TRANSLATE")
 
-local trCallback = function()
     applyTurkish()
 end
-bigBtn("🇹🇷 TURKCE YAP", Color3.fromRGB(180, 30, 30), trCallback)
-bigBtn("🇬🇧 ENGLISH YAP", Color3.fromRGB(30, 80, 180), restoreEnglish)
 bigBtn("REFRESH NPC", Color3.fromRGB(50, 50, 60), function() scanNPCs() end)
 
 local sep3 = Instance.new("Frame"); sep3.Size = UDim2.new(1, 0, 0, 1); sep3.BackgroundColor3 = Color3.fromRGB(60, 60, 70); sep3.BorderSizePixel = 0; sep3.Parent = sf
@@ -689,5 +598,5 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- Init
-task.wait(1); scanNPCs(); startTranslationListener()
+-- task.wait(1); scanNPCs(); startTranslationListener()
 return "ESP v6 loaded"
