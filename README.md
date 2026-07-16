@@ -49,7 +49,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BaySorry/MAINHUB/refs
 ### 🎮 Supported Games
 | Game Title | Functionality Status |
 | :--- | :--- |
-| **Bite By Night** | 🟢 Fully Operational |
+| **Bite By Night** | 🔴 Patched |
 | **Project 2** | 🟡 In Development |
 | **Project 3** | 🔴 Planned |
 
